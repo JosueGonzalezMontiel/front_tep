@@ -61,23 +61,50 @@ export default class RecursosPage {
             <td>${rec.descripcion || ""}</td>
             <td>${rec.marca}</td>
             <td>${rec.modelo}</td>
-            <td>${rec.expediente_resguardo || ""}</td>
-            <td>${
-              imgSrc
-                ? `<img src="${imgSrc}" class="img-thumbnail" style="max-width:80px;">`
-                : ""
-            }</td>
             <td>
-              <button class="btn btn-sm btn-info" data-id="${
-                rec.nu_inventario
-              }" data-action="edit">Editar</button>
-              <button class="btn btn-sm btn-danger" data-id="${
-                rec.nu_inventario
-              }" data-action="delete">Eliminar</button>
+                ${
+                  rec.expediente_resguardo
+                    ? rec.expediente_resguardo.expediente
+                    : ""
+                }
+                ${
+                  rec.expediente_resguardo
+                    ? `<button class="btn btn-sm btn-primary ms-1"
+                            data-exp="${rec.expediente_resguardo.expediente}"
+                            data-action="info">Info</button>`
+                    : ""
+                }
             </td>
-          `;
+            <td>
+                ${
+                  imgSrc
+                    ? `<img src="${imgSrc}" class="img-thumbnail" style="max-width:80px;">`
+                    : ""
+                }
+            </td>
+            <td>
+                <button class="btn btn-sm btn-info" data-id="${
+                  rec.nu_inventario
+                }" data-action="edit">Editar</button>
+                <button class="btn btn-sm btn-danger" data-id="${
+                  rec.nu_inventario
+                }" data-action="delete">Eliminar</button>
+            </td>
+            `;
+
           this.tableBody.appendChild(row);
         });
+        this.tableBody
+          .querySelectorAll("button[data-action='info']")
+          .forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const exp = btn.dataset.exp;
+              if (exp) {
+                // Usa la función global viewPersonal definida en main.js
+                viewPersonal(exp);
+              }
+            });
+          });
         this.tableBody
           .querySelectorAll("button[data-action='edit']")
           .forEach((btn) =>
@@ -135,7 +162,7 @@ export default class RecursosPage {
       document.getElementById("estado_fisico").value = rec.estado_fisico || "";
       document.getElementById("ubicacion").value = rec.ubicacion || "";
       document.getElementById("expediente_resguardo").value =
-        rec.expediente_resguardo || "";
+        rec.expediente_resguardo ? rec.expediente_resguardo.expediente : "";
       document.getElementById("fecha_asig").value = rec.fecha_asig || "";
       document.getElementById("ruta_rec").value = rec.ruta || "";
       this.formError.style.display = "none";
@@ -255,29 +282,31 @@ export default class RecursosPage {
     try {
       const result = await this.service.list({ q, limit: 100, offset: 0 });
       const list = result.items || result.data || result;
-      if (!list || list.length === 0) {
-        errorEl.textContent = "No se encontraron resultados.";
-        errorEl.style.display = "block";
+      if (!Array.isArray(list) || list.length === 0) {
+        // mensaje de error
         return;
       }
-      // agrupar por expediente_resguardo
+      // agrupar por número de expediente
       const grouped = {};
       list.forEach((r) => {
-        const exp = r.expediente_resguardo || "Sin expediente";
-        if (!grouped[exp]) grouped[exp] = [];
-        grouped[exp].push(r);
+        const key = r.expediente_resguardo
+          ? r.expediente_resguardo.expediente
+          : "Sin expediente";
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(r);
       });
-      for (const exp in grouped) {
-        const recs = grouped[exp];
-        const person = recs[0].expediente_resguardo; // La clave devuelta incluye info del personal
-        // Tarjeta horizontal
+      for (const key in grouped) {
+        const recs = grouped[key];
+        const person = recs[0].expediente_resguardo; // ahora es objeto { expediente, paterno, nombre, ... }
         const card = document.createElement("div");
         card.className = "card mb-3";
         card.innerHTML = `
-          <div class="card-body">
-            <h5 class="card-title">Expediente: ${person.expediente} - ${
-          person.paterno
-        } ${person.materno || ""} ${person.nombre}</h5>
+            <div class="card-body">
+            <h5 class="card-title">
+                Expediente: ${person.expediente} - ${person.paterno} ${
+          person.materno || ""
+        } ${person.nombre}
+            </h5>
             <p class="card-text"><strong>Adscripción:</strong> ${
               person.adscripcion || "N/A"
             }</p>
@@ -286,16 +315,16 @@ export default class RecursosPage {
             }</p>
             <h6>Recursos asignados:</h6>
             <ul class="list-group list-group-flush">
-              ${recs
-                .map(
-                  (r) =>
-                    `<li class="list-group-item">${r.nu_inventario} - ${
-                      r.descripcion || ""
-                    } (${r.marca} ${r.modelo})</li>`
-                )
-                .join("")}
+                ${recs
+                  .map(
+                    (r) =>
+                      `<li class="list-group-item">${r.nu_inventario} - ${
+                        r.descripcion || ""
+                      } (${r.marca} ${r.modelo})</li>`
+                  )
+                  .join("")}
             </ul>
-          </div>`;
+            </div>`;
         resultsEl.appendChild(card);
       }
     } catch (err) {
