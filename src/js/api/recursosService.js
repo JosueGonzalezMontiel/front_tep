@@ -46,10 +46,13 @@ export default class RecursosService {
   }
 
   async update(nu_inventario, data) {
-    const res = await this.api.request(`/recursos_m/${nu_inventario}`, {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    });
+    const res = await this.api.request(
+      `/recursos_m/${encodeURIComponent(nu_inventario)}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }
+    );
     if (!res.ok) {
       const errData = await res.json().catch(() => null);
       throw new Error(
@@ -60,9 +63,12 @@ export default class RecursosService {
   }
 
   async delete(nu_inventario) {
-    const res = await this.api.request(`/recursos_m/${nu_inventario}`, {
-      method: "DELETE",
-    });
+    const res = await this.api.request(
+      `/recursos_m/${encodeURIComponent(nu_inventario)}`,
+      {
+        method: "DELETE",
+      }
+    );
     if (!res.ok) {
       throw new Error(`Error al eliminar recurso: ${res.status}`);
     }

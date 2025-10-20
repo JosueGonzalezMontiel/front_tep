@@ -161,29 +161,38 @@
             <div class="content-area">
                 <table class="table table-bordered">
                 <thead>
-                    <tr>
+                 <tr>
                     <th>Inventario</th>
+                    <th>NSAR</th>
                     <th>Descripción</th>
                     <th>Marca</th>
                     <th>Modelo</th>
+                    <th>Serie</th>
+                    <th>Observaciones</th>
+                    <th>Material</th>
+                    <th>Color</th>
+                    <th>Estado físico</th>
+                    <th>Ubicación</th>
+                    <th>Fecha Asig.</th>
                     <th>Exp. Resguardo</th>
                     <th>Foto</th>
                     <th>Acciones</th>
-                    </tr>
+                 </tr>
                 </thead>
                 <tbody id="recursos-table-body"></tbody>
                 <tbody id="recursos-loading" style="display:none;">
-                    <tr>
-                    <td colspan="7" class="text-center">
-                        <div class="spinner-border text-primary" role="status">
-                        <span class="visualmente-hidden">Cargando…</span>
-                        </div>
+                <tr>
+                    <td colspan="15" class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando…</span>
+                    </div>
                     </td>
-                    </tr>
+                </tr>
                 </tbody>
                 <tbody id="recursos-error" style="display:none;">
-                    <tr><td colspan="7" class="alert alert-danger"></td></tr>
+                <tr><td colspan="15" class="alert alert-danger"></td></tr>
                 </tbody>
+
                 </table>
             </div>
             </div>

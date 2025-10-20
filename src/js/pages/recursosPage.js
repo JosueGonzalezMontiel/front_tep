@@ -56,44 +56,53 @@ export default class RecursosPage {
         records.forEach((rec) => {
           const row = document.createElement("tr");
           const imgSrc = rec.ruta ? PersonalCard.resolveImageSrc(rec.ruta) : "";
+
           row.innerHTML = `
             <td>${rec.nu_inventario}</td>
+            <td>${rec.nu_NSAR}</td>
             <td>${rec.descripcion || ""}</td>
-            <td>${rec.marca}</td>
-            <td>${rec.modelo}</td>
+            <td>${rec.marca || ""}</td>
+            <td>${rec.modelo || ""}</td>
+            <td>${rec.serie || ""}</td>
+            <td>${rec.observaciones || ""}</td>
+            <td>${rec.material || ""}</td>
+            <td>${rec.color || ""}</td>
+            <td>${rec.estado_fisico || ""}</td>
+            <td>${rec.ubicacion || ""}</td>
+            <td>${rec.fecha_asig || ""}</td>
             <td>
-                ${
-                  rec.expediente_resguardo
-                    ? rec.expediente_resguardo.expediente
-                    : ""
-                }
-                ${
-                  rec.expediente_resguardo
-                    ? `<button class="btn btn-sm btn-primary ms-1"
-                            data-exp="${rec.expediente_resguardo.expediente}"
-                            data-action="info">Info</button>`
-                    : ""
-                }
+            ${
+              rec.expediente_resguardo
+                ? rec.expediente_resguardo.expediente
+                : ""
+            }
+            ${
+              rec.expediente_resguardo
+                ? `<button class="btn btn-sm btn-primary ms-1"
+                        data-exp="${rec.expediente_resguardo.expediente}"
+                        data-action="info">Info</button>`
+                : ""
+            }
             </td>
             <td>
-                ${
-                  imgSrc
-                    ? `<img src="${imgSrc}" class="img-thumbnail" style="max-width:80px;">`
-                    : ""
-                }
+            ${
+              imgSrc
+                ? `<img src="${imgSrc}" class="img-thumbnail" style="max-width:80px;">`
+                : ""
+            }
             </td>
             <td>
-                <button class="btn btn-sm btn-info" data-id="${
-                  rec.nu_inventario
-                }" data-action="edit">Editar</button>
-                <button class="btn btn-sm btn-danger" data-id="${
-                  rec.nu_inventario
-                }" data-action="delete">Eliminar</button>
+            <button class="btn btn-sm btn-info" data-id="${
+              rec.nu_inventario
+            }" data-action="edit">Editar</button>
+            <button class="btn btn-sm btn-danger" data-id="${
+              rec.nu_inventario
+            }" data-action="delete">Eliminar</button>
             </td>
-            `;
-
+        `;
           this.tableBody.appendChild(row);
         });
+
         this.tableBody
           .querySelectorAll("button[data-action='info']")
           .forEach((btn) => {
@@ -198,6 +207,10 @@ export default class RecursosPage {
         fecha_asig: document.getElementById("fecha_asig").value || null,
         ruta: document.getElementById("ruta_rec").value.trim() || null,
       };
+
+      const expValue = document.getElementById("expediente_resguardo").value;
+      payload.expediente_resguardo = expValue ? Number(expValue) : null;
+
       const nu_inventario = document
         .getElementById("nu_inventario")
         .value.trim();
@@ -297,24 +310,34 @@ export default class RecursosPage {
       });
       for (const key in grouped) {
         const recs = grouped[key];
-        const person = recs[0].expediente_resguardo; // ahora es objeto { expediente, paterno, nombre, ... }
+        const person = recs[0].expediente_resguardo;
+        const imgPerson = person.ruta
+          ? PersonalCard.resolveImageSrc(person.ruta)
+          : null;
         const card = document.createElement("div");
         card.className = "card mb-3";
         card.innerHTML = `
+        <div class="row g-0">
+            <div class="col-md-3 d-flex align-items-center justify-content-center">
+            ${
+              imgPerson
+                ? `<img src="${imgPerson}" class="img-fluid rounded-start" style="max-height:180px;">`
+                : `<div class="personal-image-placeholder" style="font-size: 5rem; color: #ccc;"><i class="bi bi-person-circle"></i></div>`
+            }
+            </div>
+            <div class="col-md-9">
             <div class="card-body">
-            <h5 class="card-title">
-                Expediente: ${person.expediente} - ${person.paterno} ${
-          person.materno || ""
-        } ${person.nombre}
-            </h5>
-            <p class="card-text"><strong>Adscripción:</strong> ${
-              person.adscripcion || "N/A"
-            }</p>
-            <p class="card-text"><strong>Cargo:</strong> ${
-              person.cargo || "N/A"
-            }</p>
-            <h6>Recursos asignados:</h6>
-            <ul class="list-group list-group-flush">
+                <h5 class="card-title">Expediente: ${person.expediente} - ${
+          person.paterno
+        } ${person.materno || ""} ${person.nombre}</h5>
+                <p class="card-text"><strong>Adscripción:</strong> ${
+                  person.adscripcion || "N/A"
+                }</p>
+                <p class="card-text"><strong>Cargo:</strong> ${
+                  person.cargo || "N/A"
+                }</p>
+                <h6>Recursos asignados:</h6>
+                <ul class="list-group list-group-flush">
                 ${recs
                   .map(
                     (r) =>
@@ -323,8 +346,10 @@ export default class RecursosPage {
                       } (${r.marca} ${r.modelo})</li>`
                   )
                   .join("")}
-            </ul>
-            </div>`;
+                </ul>
+            </div>
+            </div>
+        </div>`;
         resultsEl.appendChild(card);
       }
     } catch (err) {
