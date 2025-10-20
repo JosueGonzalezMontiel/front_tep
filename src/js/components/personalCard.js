@@ -21,7 +21,7 @@ export default class PersonalCard {
       else if (/^personal\//i.test(path)) imgPath = `img/${path}`;
       else {
         const basename = path.split("/").pop();
-        imgPath = `img/personal/${basename}`;
+        imgPath = `public/img/personal/${basename}`;
       }
     }
     const base =
