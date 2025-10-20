@@ -13,22 +13,27 @@ export default class PersonalCard {
     if (/^https?:\/\//i.test(path)) return path;
     const lower = path.toLowerCase();
     let imgPath = null;
-    const idx = lower.indexOf("/img/");
+    const idx = lower.indexOf("/public/img/");
     if (idx !== -1) {
       imgPath = path.substring(idx + 1);
     } else {
-      if (path.startsWith("img/")) imgPath = path;
-      else if (/^personal\//i.test(path)) imgPath = `img/${path}`;
+      if (path.startsWith("public/img/")) imgPath = path;
+      else if (path.startsWith("img/")) imgPath = `public/${path}`;
+      else if (/^personal\//i.test(path)) imgPath = `public/img/${path}`;
       else {
         const basename = path.split("/").pop();
         imgPath = `public/img/personal/${basename}`;
       }
     }
+
+    // Construye la URL final absoluta
     const base =
       window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "");
     const final = imgPath.startsWith("/")
       ? `${window.location.origin}${imgPath}`
       : `${base}/${imgPath}`;
+
+    // Limpia dobles barras
     return final.replace(/([^:]\/)\/+/g, "$1");
   }
 
