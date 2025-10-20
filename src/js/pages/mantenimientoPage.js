@@ -42,7 +42,7 @@ export default class MantenimientoPage {
     this.errorMsg.style.display = "none";
     try {
       const result = await this.service.list({});
-      const list = result.data || result;
+      const list = result.items || result.data || result;
       const records = Array.isArray(list) ? list : [];
       if (records.length === 0) {
         this.tableBody.innerHTML =

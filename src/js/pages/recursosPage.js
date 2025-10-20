@@ -45,7 +45,7 @@ export default class RecursosPage {
     try {
       // El backend devuelve { data: [...], total: <n> }
       const result = await this.service.list({});
-      const list = result.data || result;
+      const list = result.items || result.data || result;
       const records = Array.isArray(list) ? list : [];
       if (records.length === 0) {
         this.tableBody.innerHTML = `
@@ -254,7 +254,7 @@ export default class RecursosPage {
     }
     try {
       const result = await this.service.list({ q, limit: 100, offset: 0 });
-      const list = result.data || result;
+      const list = result.items || result.data || result;
       if (!list || list.length === 0) {
         errorEl.textContent = "No se encontraron resultados.";
         errorEl.style.display = "block";
