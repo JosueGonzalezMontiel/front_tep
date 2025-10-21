@@ -59,15 +59,9 @@ export default class RecursosPage {
 
           row.innerHTML = `
             <td>${rec.nu_inventario}</td>
-            <td>${rec.nu_NSAR}</td>
             <td>${rec.descripcion || ""}</td>
             <td>${rec.marca || ""}</td>
-            <td>${rec.modelo || ""}</td>
-            <td>${rec.serie || ""}</td>
             <td>${rec.observaciones || ""}</td>
-            <td>${rec.material || ""}</td>
-            <td>${rec.color || ""}</td>
-            <td>${rec.estado_fisico || ""}</td>
             <td>${rec.ubicacion || ""}</td>
             <td>${rec.fecha_asig || ""}</td>
             <td>
@@ -92,6 +86,9 @@ export default class RecursosPage {
             }
             </td>
             <td>
+            <button class="btn btn-sm btn-secondary" data-id="${
+              rec.nu_inventario
+            }" data-action="view">Ver</button>
             <button class="btn btn-sm btn-info" data-id="${
               rec.nu_inventario
             }" data-action="edit">Editar</button>
@@ -114,6 +111,15 @@ export default class RecursosPage {
               }
             });
           });
+
+        this.tableBody
+          .querySelectorAll("button[data-action='view']")
+          .forEach((btn) =>
+            btn.addEventListener("click", () =>
+              this.viewRecurso(btn.dataset.id)
+            )
+          );
+
         this.tableBody
           .querySelectorAll("button[data-action='edit']")
           .forEach((btn) =>
@@ -149,6 +155,54 @@ export default class RecursosPage {
     const modalEl = document.getElementById("recursosModal");
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
+  }
+
+  async viewRecurso(nu_inventario) {
+    try {
+      const rec = await this.service.get(nu_inventario);
+      // Llena los campos del modal de consulta:
+      document.getElementById("viewRecInventario").textContent =
+        rec.nu_inventario;
+      document.getElementById("viewRecNSAR").textContent = rec.nu_NSAR;
+      document.getElementById("viewRecDescripcion").textContent =
+        rec.descripcion || "";
+      document.getElementById("viewRecMarca").textContent = rec.marca || "";
+      document.getElementById("viewRecModelo").textContent = rec.modelo || "";
+      document.getElementById("viewRecSerie").textContent = rec.serie || "";
+      document.getElementById("viewRecObservaciones").textContent =
+        rec.observaciones || "";
+      document.getElementById("viewRecMaterial").textContent =
+        rec.material || "";
+      document.getElementById("viewRecColor").textContent = rec.color || "";
+      document.getElementById("viewRecEstadoFisico").textContent =
+        rec.estado_fisico || "";
+      document.getElementById("viewRecUbicacion").textContent =
+        rec.ubicacion || "";
+      document.getElementById("viewRecFechaAsig").textContent =
+        rec.fecha_asig || "";
+      document.getElementById("viewRecExpediente").textContent =
+        rec.expediente_resguardo
+          ? `${rec.expediente_resguardo.expediente} - ${
+              rec.expediente_resguardo.paterno
+            } ${rec.expediente_resguardo.materno || ""} ${
+              rec.expediente_resguardo.nombre
+            }`
+          : "N/A";
+      const imgSrc = rec.ruta ? PersonalCard.resolveImageSrc(rec.ruta) : null;
+      const imgEl = document.getElementById("viewRecImage");
+      if (imgSrc) {
+        imgEl.src = imgSrc;
+        imgEl.style.display = "";
+      } else {
+        imgEl.style.display = "none";
+      }
+      const modal = new bootstrap.Modal(
+        document.getElementById("viewRecursoModal")
+      );
+      modal.show();
+    } catch (err) {
+      alert("Error al consultar recurso: " + err.message);
+    }
   }
 
   async editRecurso(nu_inventario) {
@@ -202,12 +256,11 @@ export default class RecursosPage {
         estado_fisico:
           document.getElementById("estado_fisico").value.trim() || null,
         ubicacion: document.getElementById("ubicacion").value.trim() || null,
-        expediente_resguardo:
-          document.getElementById("expediente_resguardo").value || null,
         fecha_asig: document.getElementById("fecha_asig").value || null,
         ruta: document.getElementById("ruta_rec").value.trim() || null,
       };
 
+      // Convertir expediente a número o null
       const expValue = document.getElementById("expediente_resguardo").value;
       payload.expediente_resguardo = expValue ? Number(expValue) : null;
 
@@ -224,11 +277,15 @@ export default class RecursosPage {
         this.formError.style.display = "block";
         return;
       }
+
       if (this.isEditMode) {
-        await this.service.update(nu_inventario, payload);
+        // Al actualizar, incluye nu_inventario en el JSON para que el backend no rechace la petición
+        await this.service.update(nu_inventario, { nu_inventario, ...payload });
       } else {
+        // En la creación ya lo estabas enviando correctamente
         await this.service.create({ nu_inventario, ...payload });
       }
+
       const modalInst = bootstrap.Modal.getInstance(
         document.getElementById("recursosModal")
       );

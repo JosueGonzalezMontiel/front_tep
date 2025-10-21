@@ -161,37 +161,30 @@
             <div class="content-area">
                 <table class="table table-bordered">
                 <thead>
-                 <tr>
-                    <th>Inventario</th>
-                    <th>NSAR</th>
-                    <th>Descripción</th>
-                    <th>Marca</th>
-                    <th>Modelo</th>
-                    <th>Serie</th>
-                    <th>Observaciones</th>
-                    <th>Material</th>
-                    <th>Color</th>
-                    <th>Estado físico</th>
-                    <th>Ubicación</th>
-                    <th>Fecha Asig.</th>
-                    <th>Exp. Resguardo</th>
-                    <th>Foto</th>
-                    <th>Acciones</th>
-                 </tr>
-                </thead>
-                <tbody id="recursos-table-body"></tbody>
-                <tbody id="recursos-loading" style="display:none;">
-                <tr>
-                    <td colspan="15" class="text-center">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Cargando…</span>
-                    </div>
-                    </td>
-                </tr>
-                </tbody>
-                <tbody id="recursos-error" style="display:none;">
-                <tr><td colspan="15" class="alert alert-danger"></td></tr>
-                </tbody>
+                    <tr>
+                        <th>Inventario</th>
+                        <th>Descripción</th>
+                        <th>Marca</th>
+                        <th>Observaciones</th>
+                        <th>Ubicación</th>
+                        <th>Fecha Asig.</th>
+                        <th>Exp. Resguardo</th>
+                        <th>Foto</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="recursos-table-body"></tbody>
+                    <tbody id="recursos-loading" style="display:none;">
+                    <tr>
+                        <td colspan="9" class="text-center">
+                        …spinner…
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tbody id="recursos-error" style="display:none;">
+                    <tr><td colspan="9" class="alert alert-danger"></td></tr>
+                    </tbody>
+
 
                 </table>
             </div>
@@ -690,6 +683,44 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal para Consultar Recurso -->
+    <div class="modal fade" id="viewRecursoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Detalles del Recurso</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+            <div class="col-md-4 text-center">
+                <img id="viewRecImage" src="/placeholder.svg" alt="Foto" class="img-fluid rounded" style="max-height: 250px; object-fit: cover;">
+            </div>
+            <div class="col-md-8">
+                <div class="detail-group"><label>Inventario:</label><p id="viewRecInventario"></p></div>
+                <div class="detail-group"><label>NSAR:</label><p id="viewRecNSAR"></p></div>
+                <div class="detail-group"><label>Descripción:</label><p id="viewRecDescripcion"></p></div>
+                <div class="detail-group"><label>Marca:</label><p id="viewRecMarca"></p></div>
+                <div class="detail-group"><label>Modelo:</label><p id="viewRecModelo"></p></div>
+                <div class="detail-group"><label>Serie:</label><p id="viewRecSerie"></p></div>
+                <div class="detail-group"><label>Observaciones:</label><p id="viewRecObservaciones"></p></div>
+                <div class="detail-group"><label>Material:</label><p id="viewRecMaterial"></p></div>
+                <div class="detail-group"><label>Color:</label><p id="viewRecColor"></p></div>
+                <div class="detail-group"><label>Estado físico:</label><p id="viewRecEstadoFisico"></p></div>
+                <div class="detail-group"><label>Ubicación:</label><p id="viewRecUbicacion"></p></div>
+                <div class="detail-group"><label>Fecha Asig.:</label><p id="viewRecFechaAsig"></p></div>
+                <div class="detail-group"><label>Exp. Resguardo:</label><p id="viewRecExpediente"></p></div>
+            </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
 
     <!-- Modal Agregar/Editar Características -->
     <div class="modal fade" id="caracteristicasModal" tabindex="-1">

@@ -58,6 +58,7 @@ window.confirmDelete = () => personalPage.confirmDelete();
 window.openAddRecursoModal = () => recursosPage.openAddModal();
 window.editRecurso = (id) => recursosPage.editRecurso(id);
 window.saveRecurso = () => recursosPage.saveRecurso();
+window.viewRecurso = (id) => recursosPage.viewRecurso(id);
 window.deleteRecurso = (id) => recursosPage.deleteRecurso(id);
 window.confirmDeleteRecurso = () => recursosPage.confirmDelete();
 window.openRecursosSearchModal = () => recursosPage.openSearchModal();
