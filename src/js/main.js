@@ -55,6 +55,8 @@ window.deletePersonal = (id, name) => personalPage.deletePersonal(id, name);
 window.confirmDelete = () => personalPage.confirmDelete();
 
 // Funciones de Recursos
+window.aplicarFiltroRecursos = () => recursosPage.aplicarFiltroRecursos();
+window.limpiarFiltroRecursos = () => recursosPage.limpiarFiltroRecursos();
 window.openAddRecursoModal = () => recursosPage.openAddModal();
 window.editRecurso = (id) => recursosPage.editRecurso(id);
 window.saveRecurso = () => recursosPage.saveRecurso();

@@ -160,7 +160,54 @@
                 </div>
             </header>
             <div class="content-area">
-                <table class="table table-bordered">
+                <!-- Tarjetas de dashboard -->
+                <div id="recursos-dashboard" class="row mb-4">
+                  <div class="col-md-4">
+                    <div class="card text-white bg-primary shadow-sm">
+                      <div class="card-body">
+                        <h5 class="card-title mb-1">Total de recursos</h5>
+                        <h3 id="countTotalRecursos" class="card-text mb-0">0</h3>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="card text-white bg-success shadow-sm">
+                      <div class="card-body">
+                        <h5 class="card-title mb-1">Computadoras</h5>
+                        <h3 id="countComputadoras" class="card-text mb-0">0</h3>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="card text-white bg-danger shadow-sm">
+                      <div class="card-body">
+                        <h5 class="card-title mb-1">En estado defectuoso</h5>
+                        <h3 id="countDefectuosos" class="card-text mb-0">0</h3>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Barra de filtros -->
+                <div id="recursos-filters" class="mb-4">
+                  <div class="input-group">
+                    <input type="text" id="filterQuery" class="form-control" placeholder="Filtrar por descripción, marca, modelo…">
+                    <button class="btn btn-outline-secondary" type="button" onclick="aplicarFiltroRecursos()">
+                      <i class="bi bi-funnel"></i> Filtrar
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="limpiarFiltroRecursos()">
+                      <i class="bi bi-x-circle"></i> Limpiar
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Contenedor de tarjetas de recursos -->
+                <div id="recursos-cards" class="row g-3 mb-4">
+                  <!-- Aquí se insertarán dinámicamente las tarjetas agrupadas por descripción -->
+                </div>
+
+              <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover shadow-sm rounded">
                 <thead>
                     <tr>
                         <th>Inventario</th>
@@ -188,6 +235,7 @@
 
 
                 </table>
+                </div>
             </div>
             </div>
         </div>

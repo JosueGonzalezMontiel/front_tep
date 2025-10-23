@@ -47,6 +47,9 @@ export default class RecursosPage {
       const result = await this.service.list({});
       const list = result.items || result.data || result;
       const records = Array.isArray(list) ? list : [];
+      this.latestRecords = records;
+      this.renderDashboard(records);
+      this.renderCards(records);
       if (records.length === 0) {
         this.tableBody.innerHTML = `
           <tr>
@@ -142,6 +145,97 @@ export default class RecursosPage {
     } finally {
       this.spinner.style.display = "none";
     }
+  }
+
+  renderDashboard(records) {
+    const total = records.length;
+    const computadoras = records.filter((r) =>
+      ["laptop", "pc de escritorio", "computadora"].some((desc) =>
+        (r.descripcion || "").toLowerCase().includes(desc)
+      )
+    ).length;
+    const defectuosos = records.filter((r) =>
+      (r.estado_fisico || "").toLowerCase().includes("defectuoso")
+    ).length;
+    document.getElementById("countTotalRecursos").textContent = total;
+    document.getElementById("countComputadoras").textContent = computadoras;
+    document.getElementById("countDefectuosos").textContent = defectuosos;
+  }
+
+  // Agrupa por descripción y genera tarjetas
+  renderCards(records) {
+    const container = document.getElementById("recursos-cards");
+    container.innerHTML = "";
+    // Agrupa por descripción simplificada
+    const groups = {};
+    records.forEach((rec) => {
+      const key = (rec.descripcion || "Otros").split(" ")[0].toLowerCase();
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(rec);
+    });
+    Object.keys(groups).forEach((key) => {
+      // Encabezado de categoría
+      const header = document.createElement("h4");
+      header.className = "mt-3";
+      header.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+      container.appendChild(header);
+      // Tarjetas para esta categoría
+      groups[key].forEach((rec) => {
+        const col = document.createElement("div");
+        col.className = "col-md-4";
+        col.innerHTML = `
+          <div class="recurso-card">
+            <div class="recurso-card-header">${rec.descripcion || ""}</div>
+            <img src="${
+              rec.ruta
+                ? PersonalCard.resolveImageSrc(rec.ruta)
+                : "/placeholder.svg"
+            }" alt="">
+            <div class="recurso-card-body">
+              <p><strong>Inventario:</strong> ${rec.nu_inventario}</p>
+              <p><strong>Marca:</strong> ${rec.marca || ""}</p>
+              <p><strong>Modelo:</strong> ${rec.modelo || ""}</p>
+              <p><strong>Ubicación:</strong> ${rec.ubicacion || ""}</p>
+            </div>
+            <div class="recurso-card-actions">
+              ${
+                rec.expediente_resguardo
+                  ? `<button class="btn btn-sm btn-primary me-1" data-exp="${rec.expediente_resguardo.expediente}" data-action="info">Info</button>`
+                  : ""
+              }
+              <button class="btn btn-sm btn-secondary me-1" data-id="${
+                rec.nu_inventario
+              }" data-action="view">Ver</button>
+              <button class="btn btn-sm btn-info me-1" data-id="${
+                rec.nu_inventario
+              }" data-action="edit">Editar</button>
+              <button class="btn btn-sm btn-danger" data-id="${
+                rec.nu_inventario
+              }" data-action="delete">Eliminar</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(col);
+      });
+    });
+    // Asigna los manejadores de eventos a los nuevos botones
+    container.querySelectorAll("button[data-action='info']").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const exp = btn.dataset.exp;
+        if (exp) viewPersonal(exp);
+      });
+    });
+    container.querySelectorAll("button[data-action='view']").forEach((btn) => {
+      btn.addEventListener("click", () => this.viewRecurso(btn.dataset.id));
+    });
+    container.querySelectorAll("button[data-action='edit']").forEach((btn) => {
+      btn.addEventListener("click", () => this.editRecurso(btn.dataset.id));
+    });
+    container
+      .querySelectorAll("button[data-action='delete']")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => this.deleteRecurso(btn.dataset.id));
+      });
   }
 
   openAddModal() {
@@ -414,5 +508,26 @@ export default class RecursosPage {
       errorEl.textContent = err.message || "Error en la búsqueda";
       errorEl.style.display = "block";
     }
+  }
+  aplicarFiltroRecursos() {
+    const query = document
+      .getElementById("filterQuery")
+      .value.trim()
+      .toLowerCase();
+    if (!query) {
+      this.renderCards(this.latestRecords || []);
+      return;
+    }
+    const filtrados = (this.latestRecords || []).filter((r) =>
+      [r.descripcion, r.marca, r.modelo, r.serie].some((field) =>
+        (field || "").toLowerCase().includes(query)
+      )
+    );
+    this.renderCards(filtrados);
+  }
+
+  limpiarFiltroRecursos() {
+    document.getElementById("filterQuery").value = "";
+    this.renderCards(this.latestRecords || []);
   }
 }
