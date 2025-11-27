@@ -3,7 +3,7 @@ export default class ApiClient {
   constructor(baseUrl, apiKey) {
     this.baseUrl = baseUrl || "";
     this.apiKey =
-      apiKey || localStorage.getItem("API_KEY") || "dev_key_change_me";
+      apiKey || localStorage.getItem("API_KEY") || "dev_key_gms_330455";
   }
 
   async request(path, options = {}) {

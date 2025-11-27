@@ -49,6 +49,12 @@ export default class MantenimientoPage {
           '<tr><td colspan="8" class="text-center text-muted">No hay registros</td></tr>';
       } else {
         records.forEach((rec) => {
+          // Formatear el nombre del responsable si viene como objeto
+          const responsableText =
+            typeof rec.responsable === "object" && rec.responsable !== null
+              ? `${rec.responsable.nombre} ${rec.responsable.paterno}`.trim()
+              : rec.responsable || "";
+
           const row = document.createElement("tr");
           row.innerHTML = `
             <td>${rec.id}</td>
@@ -57,7 +63,7 @@ export default class MantenimientoPage {
             <td>${rec.trabajo || ""}</td>
             <td>${rec.fallas || ""}</td>
             <td>${rec.estatus || ""}</td>
-            <td>${rec.responsable || ""}</td>
+            <td>${responsableText}</td>
             <td>
               <button class="btn btn-sm btn-info" data-id="${
                 rec.id
@@ -120,7 +126,12 @@ export default class MantenimientoPage {
       document.getElementById("man_estatus").value = rec.estatus || "";
       document.getElementById("man_observaciones").value =
         rec.observaciones || "";
-      document.getElementById("man_responsable").value = rec.responsable || "";
+      // El responsable puede venir como objeto desde el backend
+      const responsableValue =
+        typeof rec.responsable === "object" && rec.responsable !== null
+          ? rec.responsable.expediente
+          : rec.responsable;
+      document.getElementById("man_responsable").value = responsableValue || "";
       this.formError.style.display = "none";
       new bootstrap.Modal(document.getElementById("mantenimientoModal")).show();
     } catch (err) {
@@ -132,6 +143,9 @@ export default class MantenimientoPage {
   async saveRecord() {
     this.formError.style.display = "none";
     try {
+      const responsableValue = document
+        .getElementById("man_responsable")
+        .value.trim();
       const payload = {
         nu_inventario:
           document.getElementById("man_nu_inventario").value.trim() || null,
@@ -141,13 +155,19 @@ export default class MantenimientoPage {
         estatus: document.getElementById("man_estatus").value.trim() || null,
         observaciones:
           document.getElementById("man_observaciones").value.trim() || null,
-        responsable:
-          document.getElementById("man_responsable").value.trim() || null,
+        responsable: responsableValue ? parseInt(responsableValue) : null,
       };
-      // 'trabajo' y 'nu_inventario' son obligatorios
-      if (!payload.nu_inventario || !payload.trabajo) {
+      // Validar campos obligatorios
+      if (
+        !payload.nu_inventario ||
+        !payload.fecha ||
+        !payload.trabajo ||
+        !payload.fallas ||
+        !payload.estatus ||
+        !payload.responsable
+      ) {
         this.formError.textContent =
-          "Los campos 'nu_inventario' y 'trabajo' son obligatorios.";
+          "Los campos marcados con * son obligatorios.";
         this.formError.style.display = "block";
         return;
       }
